@@ -1,0 +1,139 @@
+name: FCM Hosts Pipeline
+
+on:
+  schedule:
+    # 每 3 小时执行一次
+    - cron: '0 */3 * * *'
+  workflow_dispatch:  # 手动触发
+  push:
+    paths:
+      - 'scripts/**'
+      - '.github/workflows/**'
+      - 'requirements.txt'
+
+env:
+  PYTHON_VERSION: '3.11'
+
+jobs:
+  harvest:
+    runs-on: ubuntu-latest
+    name: Harvest IPs from Google DNS
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run Harvester
+        run: |
+          python scripts/harvest.py
+
+      - name: Upload artifacts (IPs + Scripts)
+        uses: actions/upload-artifact@v4
+        with:
+          name: workspace-data
+          path: |
+            raw_ips_v4.txt
+            raw_ips_v6.txt
+            scripts/
+          retention-days: 1
+
+  verify:
+    needs: harvest
+    runs-on: self-hosted
+    name: Verify and Select Premium IPs
+
+    steps:
+      - name: Download workspace
+        uses: actions/download-artifact@v4
+        with:
+          name: workspace-data
+          path: .
+
+      - name: Display downloaded files
+        run: |
+          echo "=== Downloaded files ==="
+          ls -la raw_*.txt 2>/dev/null || echo "No raw IP files found"
+
+      - name: Run Sommelier
+        run: |
+          python scripts/sommelier.py
+
+      - name: Display generated hosts files
+        run: |
+          echo "=== Generated hosts files ==="
+          ls -la fcm_*.hosts 2>/dev/null || echo "No hosts files found"
+
+      - name: Upload hosts artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: fcm-hosts
+          path: |
+            fcm_ipv4.hosts
+            fcm_dual.hosts
+            fcm_ipv6.hosts
+          retention-days: 1
+
+  publish:
+    needs: verify
+    runs-on: ubuntu-latest
+    name: Publish to Repository
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Download hosts artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: fcm-hosts
+          path: .
+
+      - name: Verify artifact download
+        run: |
+          echo "=== Hosts files to publish ==="
+          ls -la fcm_*.hosts || { echo "ERROR: No hosts files found!"; exit 1; }
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Commit and Push
+        run: |
+          # 添加 hosts 文件
+          git add fcm_ipv4.hosts fcm_dual.hosts fcm_ipv6.hosts 2>/dev/null || true
+
+          # 检查是否有变更
+          if git diff --cached --quiet; then
+            echo "No changes, skipping commit"
+            exit 0
+          fi
+
+          # 获取上一次提交的作者
+          LAST_AUTHOR=$(git log -1 --format="%an")
+          COMMIT_MSG="Update FCM hosts - $(date -u +'%Y-%m-%d %H:%M UTC')"
+
+          if [ "$LAST_AUTHOR" = "github-actions[bot]" ]; then
+            echo "Last commit was by bot, amending..."
+            git commit --amend -m "$COMMIT_MSG"
+            git push --force-with-lease origin main
+          else
+            echo "Last commit was by user, creating new commit..."
+            git commit -m "$COMMIT_MSG"
+            git push origin main
+          fi
