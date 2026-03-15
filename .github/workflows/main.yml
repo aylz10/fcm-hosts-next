@@ -1,9 +1,11 @@
 name: FCM Hosts Pipeline
 
 on:
-  schedule:
+  # schedule:
     # 每 30 分钟执行一次
-    - cron: '*/30 * * * *'
+    # - cron: '*/30 * * * *'
+    # 每天凌晨 1 点执行一次
+    # - cron: '0 1 * * *'
   workflow_dispatch:  # 手动触发
   push:
     paths:
