@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
 Sommelier: IP 筛选器与负载均衡器 (CN 环境运行) - Project Mjolnir 2.0
 

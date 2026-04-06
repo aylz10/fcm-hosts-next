@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
 Harvest: DNS 采集器 (US 环境运行)
 

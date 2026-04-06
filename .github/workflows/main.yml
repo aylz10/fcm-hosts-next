@@ -53,6 +53,16 @@ jobs:
     name: Verify and Select Premium IPs
 
     steps:
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+
       - name: Download workspace
         uses: actions/download-artifact@v4
         with:
