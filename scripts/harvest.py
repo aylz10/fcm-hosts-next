@@ -15,8 +15,20 @@ from typing import Set
 from dns.rdatatype import RdataType
 
 
+def unique_preserve_order(items: list[str]) -> list[str]:
+    """按出现顺序去重，避免重复 ECS 子网造成无意义查询。"""
+    seen = set()
+    result = []
+    for item in items:
+        if item in seen:
+            continue
+        seen.add(item)
+        result.append(item)
+    return result
+
+
 # DNS 服务器列表 (多源诱捕)
-DNS_SERVERS = [
+DNS_SERVERS = unique_preserve_order([
     # Google 权威 DNS
     "216.239.32.10",   # ns1.google.com
     "216.239.34.10",   # ns2.google.com
@@ -30,10 +42,10 @@ DNS_SERVERS = [
     "9.9.9.9",         # Quad9
     "101.101.101.101", # 台湾中华电信
     "8.8.8.8",         # Google Public DNS
-]
+])
 
 # 中国核心骨干网 CIDR 列表 (用于生成 ECS 子网) - 扩展版
-CHINA_BACKBONE_V4 = [
+CHINA_BACKBONE_V4 = unique_preserve_order([
     # 教育网
     "202.112.0.0/16",
     "202.113.0.0/16",
@@ -69,10 +81,10 @@ CHINA_BACKBONE_V4 = [
     "106.120.0.0/14",
     # 方正/长城等
     "111.206.0.0/16",
-]
+])
 
 # 台湾省核心诱饵网段 (TAIWAN_HITS) - 台北机房优质 IP
-TAIWAN_BACKBONE_V4 = [
+TAIWAN_BACKBONE_V4 = unique_preserve_order([
     "1.160.0.0/12",    # 台湾中华电信
     "61.224.0.0/13",   # 台湾固网
     "111.240.0.0/12",  # 台湾大哥大
@@ -82,9 +94,9 @@ TAIWAN_BACKBONE_V4 = [
     "39.8.0.0/13",     # 中华电信
     "42.72.0.0/13",    # 远传电信
     "140.112.0.0/12",  # 台湾学术网络
-]
+])
 
-CHINA_BACKBONE_V6 = [
+CHINA_BACKBONE_V6 = unique_preserve_order([
     # 教育网 IPv6
     "2001:da8::/32",
     # 电信骨干网 IPv6
@@ -100,7 +112,7 @@ CHINA_BACKBONE_V6 = [
     # 阿里云/腾讯云
     "2401:da00::/32",
     "2402:4e00::/22",
-]
+])
 
 TARGET_DOMAIN = "mtalk.google.com"
 OUTPUT_V4 = "raw_ips_v4.txt"
