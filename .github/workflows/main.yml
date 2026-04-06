@@ -11,6 +11,10 @@ on:
       - '.github/workflows/**'
       - 'requirements.txt'
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   PYTHON_VERSION: '3.11'
 
@@ -18,6 +22,7 @@ jobs:
   harvest:
     runs-on: ubuntu-latest
     name: Harvest IPs from Google DNS
+    timeout-minutes: 20
 
     steps:
       - name: Checkout repository
@@ -44,14 +49,14 @@ jobs:
           path: |
             raw_ips_v4.txt
             raw_ips_v6.txt
-            requirements.txt
             scripts/
           retention-days: 1
 
   verify:
     needs: harvest
-    runs-on: self-hosted
+    runs-on: [self-hosted, Linux, X64, jdcloud, china-bgp]
     name: Verify and Select Premium IPs
+    timeout-minutes: 15
 
     steps:
       - name: Download workspace
@@ -88,6 +93,7 @@ jobs:
     needs: verify
     runs-on: ubuntu-latest
     name: Publish to Repository
+    timeout-minutes: 10
     permissions:
       contents: write
 
