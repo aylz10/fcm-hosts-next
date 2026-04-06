@@ -44,6 +44,7 @@ jobs:
           path: |
             raw_ips_v4.txt
             raw_ips_v6.txt
+            requirements.txt
             scripts/
           retention-days: 1
 
@@ -53,24 +54,21 @@ jobs:
     name: Verify and Select Premium IPs
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install -r requirements.txt
 
       - name: Download workspace
         uses: actions/download-artifact@v4
         with:
           name: workspace-data
           path: .
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
 
       - name: Display downloaded files
         run: |
