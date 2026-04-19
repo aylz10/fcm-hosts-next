@@ -1,15 +1,15 @@
 name: FCM Hosts Pipeline
 
 on:
-  schedule:
-    # 每 3 小时执行一次
-    - cron: '0 */3 * * *'
+  # schedule:
+    # # 每 3 小时执行一次
+    # - cron: '0 */3 * * *'
   workflow_dispatch:  # 手动触发
-  push:
-    paths:
-      - 'scripts/**'
-      - '.github/workflows/**'
-      - 'requirements.txt'
+  # push:
+    # paths:
+      # - 'scripts/**'
+      # - '.github/workflows/**'
+      # - 'requirements.txt'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
