@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Mice-Tailor-Infra/fcm-hosts-next/internal/pipeline"
+	"github.com/CagedBird-Lab/fcm-hosts-next/internal/pipeline"
 )
 
 type Meta struct {

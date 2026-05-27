@@ -1,3 +1,3 @@
-module github.com/Mice-Tailor-Infra/fcm-hosts-next
+module github.com/CagedBird-Lab/fcm-hosts-next
 
 go 1.23
