@@ -24,10 +24,10 @@
 
 ## 使用
 
-GitHub Pages 分发地址：
+服务器分发地址：
 
 ```text
-https://miceworld.top/fcm-hosts-next/fcm_dual.hosts
+https://cagedbird.cn/fcm-hosts-next/fcm_dual.hosts
 ```
 
 可用于：

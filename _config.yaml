@@ -12,7 +12,7 @@ exclude:
   - raw_ips_v4.txt # 中间产物
   - raw_ips_v6.txt
 
-# 显式包含我们的核心产物，确保它们能通过 miceworld.top 访问
+# 显式包含我们的核心产物，确保它们能通过 cagedbird.cn 访问
 include:
   - fcm_ipv4.hosts
   - fcm_ipv6.hosts
