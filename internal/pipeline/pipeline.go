@@ -12,7 +12,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/CagedBird-Lab/fcm-hosts-next/internal/dnsprobe"
+	"github.com/cagedbird043/fcm-hosts-next/internal/dnsprobe"
 )
 
 type Options struct {

@@ -7,8 +7,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/CagedBird-Lab/fcm-hosts-next/internal/pipeline"
-	"github.com/CagedBird-Lab/fcm-hosts-next/internal/render"
+	"github.com/cagedbird043/fcm-hosts-next/internal/pipeline"
+	"github.com/cagedbird043/fcm-hosts-next/internal/render"
 )
 
 func main() {

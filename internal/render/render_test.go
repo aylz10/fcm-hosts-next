@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/CagedBird-Lab/fcm-hosts-next/internal/pipeline"
+	"github.com/cagedbird043/fcm-hosts-next/internal/pipeline"
 )
 
 func TestWriteAllDualStack(t *testing.T) {
